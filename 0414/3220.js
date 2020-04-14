@@ -1,15 +1,22 @@
 const http = require('http');
+const fs = require('fs');
 
 http.createServer((req, res) => {
     console.log(req.url);
 
     if (req.url === '/html') {
-        res.end('<font color="red">its html page</font>')
+        fs.readFile('./html', (err, data) => {
+            res.end(data)
+        });
     }
-
-    if (req.url === '/nodejs') {
-        res.end('<font color="red">its nodejs page</font>')
+    else if (req.url === '/nodejs') {
+        fs.readFile('./nodejs', (err, data) => {
+            res.end(data)
+        });
     }
-
-    res.end('<font color="red">its other page</font>')
+    else {
+        fs.readFile('./other', (err, data) => {
+            res.end(data)
+        });
+    }
 }).listen(3000);
