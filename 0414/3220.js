@@ -24,11 +24,7 @@ http.createServer((req, res) => {
         res.end(temp.template('query', query.id, query.id2));
     }
     else if (path === '/table') {
-        let str = '';
-        for (let i = 1; i <= query.id; i++)
-            str += '<td>' + i + '</td>';
-
-        res.end('<table><tr>' + str + '</tr></table>');
+        res.end(temp.table(query.id));
     }
     else {
         res.end('Not Found');

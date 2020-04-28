@@ -12,4 +12,4 @@ const call3 = () => {
 
 call1();
 call2();
-console.log(call3())
+console.log(call3());
