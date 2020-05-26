@@ -1,7 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
+const mariadb = require('mariadb');
 
 const app = express();
+
+const db_password = 'Wb4H9nn542';
 
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -55,9 +59,119 @@ app.get('/siteMove', (req, res) => {
     res.redirect(path);
 });
 
-app.post('/loginCheck', (req, res) => {
-    if (req.body.id === 'smart' && req.body.pw === '123') req.redirect('/Users/choi/CodingData/Learn-Node/0429/login_s.html')
-    else req.redirect('/Users/choi/CodingData/Learn-Node/0429/login_f.html')
+app.post('/loginCheck', async (req, res) => {
+    if (req.body.id === 'smart' && req.body.pw === '123') res.redirect('./login_s.html');
+    else res.redirect('login_f.html');
+});
+
+app.post('/login', async (req, res) => {
+    const id = req.body.id;
+    const pw = req.body.pw;
+
+    const conn = await mariadb.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: db_password,
+        database: 'software'
+    });
+
+    let sql = "SELECT * FROM member WHERE id=? AND pw=?";
+
+    try {
+        const rows = await conn.query(sql, [id, pw]);
+        if (rows) res.redirect('http://localhost:63342/Learn-Node/0429/login_s.html')
+        else res.redirect('http://localhost:63342/Learn-Node/0429/login_f.html')
+        console.log('success')
+    } catch (e) {
+        console.log(e);
+        res.send("no u");
+    }
+})
+
+app.post('/join', async (req, res) => {
+    const id = req.body.id;
+    const pw = req.body.pw;
+    const nickname = req.body.nickname;
+
+    const conn = await mariadb.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: db_password,
+        database: 'software'
+    });
+
+    let sql = "INSERT INTO member VALUES (?, ?, ?)";
+
+    try {
+        const rows = await conn.query(sql, [id, pw, nickname]);
+        console.log('success');
+    } catch (e) {
+        console.log('u r fucked');
+    }
+    res.send(conn.serverVersion());
+});
+
+app.post('/delete', async (req, res) => {
+    const id = req.body.id;
+
+    const conn = await mariadb.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: db_password,
+        database: 'software'
+    });
+
+    let sql = "DELETE FROM member WHERE id=?";
+
+    try {
+        const rows = await conn.query(sql, [id]);
+        res.send('success');
+    } catch (e) {
+        res.send('u r fucked');
+    }
+})
+
+app.post('/update', async (req, res) => {
+    const id = req.body.id;
+    const pw = req.body.pw;
+
+    const conn = await mariadb.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: db_password,
+        database: 'software'
+    });
+
+    let sql = "UPDATE member SET pw=? WHERE id=?";
+
+    try {
+        const rows = await conn.query(sql, [pw, id]);
+        res.send('success');
+    } catch (e) {
+        res.send('u r fucked');
+    }
+});
+
+app.post('/one-select', async (req, res) => {
+    const id = req.body.id;
+
+    const conn = await mariadb.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: db_password,
+        database: 'software'
+    });
+
+    let sql = "SELECT * FROM member"// WHERE id=?";
+
+    try {
+        const rows = await conn.query(sql);//, [id]);
+        for (let row of rows)
+            console.log('검색된 데이터: ', row.nickname);
+        res.send('success')
+    } catch (e) {
+        res.send('u r fucked');
+    }
 });
 
 app.listen(3000, _ => {
