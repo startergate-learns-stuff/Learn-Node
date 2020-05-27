@@ -5,7 +5,7 @@ const mariadb = require('mariadb');
 
 const app = express();
 
-const db_password = 'Wb4H9nn542';
+const db_password = 'somethingelse';
 
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -162,13 +162,13 @@ app.post('/one-select', async (req, res) => {
         database: 'software'
     });
 
-    let sql = "SELECT * FROM member"// WHERE id=?";
+    let sql = "SELECT * FROM member WHERE id=?";
 
     try {
-        const rows = await conn.query(sql);//, [id]);
+        const rows = await conn.query(sql, [id]);
         for (let row of rows)
             console.log('검색된 데이터: ', row.nickname);
-        res.send('success')
+        res.send(rows)
     } catch (e) {
         res.send('u r fucked');
     }
