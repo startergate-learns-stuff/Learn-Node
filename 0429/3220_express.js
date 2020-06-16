@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const sessionP = require('express-session');
 
 const func = require('./func_database')
 
@@ -8,19 +9,32 @@ const app = express();
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(sessionP({
+    secret: 'nodeisnode',
+    resave: false,
+    saveUninitialized: true
+}));
 
 app.use((req, res, next) => {
-    console.log('middleware 1')
-    next()
+    console.log('middleware 1');
+    next();
 });
 
 app.use((req, res, next) => {
-    console.log('middleware 2')
-    next()
+    console.log('middleware 2');
+    next();
 });
 
 app.get('/', (req, res) => {
-    res.render('index', {num: req.query.num});
+    req.session.user = {
+        name: "jason",
+        age: 20
+    };
+    console.log("session saved");
+
+    res.render('review', {
+        num: 5
+    });
 });
 
 app.get('/page', (req, res) => {
@@ -60,22 +74,29 @@ app.get('/siteMove', (req, res) => {
 });
 
 app.post('/loginCheck', (req, res) => {
-    if (req.body.id === 'smart' && req.body.pw === '123') res.redirect('./login_s.html');
-    else res.redirect('login_f.html');
+    if (req.body.id === 'smart' && req.body.pw === '123') res.redirect('./login_s.ejs');
+    else res.redirect('login_f.ejs');
 });
 
 app.post('/login', func.login);
 
 app.post('/join', func.join);
 
-app.post('/delete', func.delete);
+app.get('/delete', func.delete);
 
 app.post('/update', func.update);
 
 app.post('/one-select', func.select);
 
-app.all('/all-select', func.selectAll);
+app.get('/mail', (req, res) => {
+    res.render('mail');
+});
+
+app.all('/all-select', (req, res) => {
+    console.log("username: " + req.session.user.name);
+    func.selectAll(req, res)
+});
 
 app.listen(3000, _ => {
-
+    console.log("SERVER ON")
 });

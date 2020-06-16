@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    로그인한 유저 ID> <%=user.name%>
+    <h1>전체 회원 검색 페이지</h1>
+    <table border="1">
+        <tr>
+            <td>ID</td>
+            <td>PW</td>
+            <td>NICK</td>
+            <td></td>
+        </tr>
+        <% for (let row of rows) { %>
+            <tr>
+                <td><%= row.id %></td>
+                <td><%= row.pw %></td>
+                <td><%= row.nickname %></td>
+                <td><a href="/delete?id=<%= row.id %>">삭제</a></td>
+            </tr>
+        <% } %>
+    </table>
+</body>
+</html>

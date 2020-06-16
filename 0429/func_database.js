@@ -8,8 +8,8 @@ exports.login = async (req, res) => {
 
     try {
         const rows = await (await conn).query(sql, [id, pw]);
-        if (rows[0]) res.redirect('http://localhost:63342/Learn-Node/0429/login_s.html')
-        else res.redirect('http://localhost:63342/Learn-Node/0429/login_f.html')
+        if (rows[0]) res.render('login_s', {name: id})
+        else res.render('login_f')
         console.log('success')
     } catch (e) {
         console.log(e);
@@ -34,13 +34,13 @@ exports.join = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-    const id = req.body.id;
+    const id = req.query.id;
 
     let sql = "DELETE FROM member WHERE id=?";
 
     try {
         const rows = await (await conn).query(sql, [id]);
-        res.send('success');
+        res.redirect('/all-select');
     } catch (e) {
         res.send('u r fucked');
     }
@@ -76,28 +76,12 @@ exports.select = async (req, res) => {
 };
 
 exports.selectAll = async (req, res) => {
-    const id = req.body.id;
-
     let sql = "SELECT * FROM member";
 
     try {
         const rows = await (await conn).query(sql);
-        res.write('<html>');
-        res.write('<body>');
-        res.write('<table>');
-        for (let row of rows) {
-            res.write('<tr>');
-            res.write('<td>' + row.id + '</td>');
-            res.write('<td>' + row.nickname + '</td>');
-            res.write('<tr>');
-        }
-        res.write('</table>');
-        res.write('</body>');
-        res.write('</html>');
-        // res.send(rows)
-        res.end();
+        res.render('select-all', {rows: rows, user: req.session.user});
     } catch (e) {
-        console.log(e + 'sfd')
         res.send('u r fucked');
     }
 };
