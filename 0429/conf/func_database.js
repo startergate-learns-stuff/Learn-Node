@@ -10,12 +10,15 @@ exports.login = async (req, res) => {
         const rows = await (await conn).query(sql, [email, pw]);
         if (rows[0]) {
             req.session.user = {
-                email: email
-            }
-            res.redirect('/message')
+                email: email,
+                pw: pw,
+                tel: rows[0].tel,
+                address: rows[0].address
+            };
+            res.redirect('/message');
         }
-        else res.render('login_f')
-        console.log('success')
+        else res.render('login_f');
+        console.log('success');
     } catch (e) {
         console.log(e);
         res.send("no u");
@@ -59,14 +62,22 @@ exports.delete = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-    const id = req.body.id;
+    const email = req.body.email;
     const pw = req.body.pw;
+    const tel = req.body.tel;
+    const address = req.body.address;
 
-    let sql = "UPDATE member SET pw=? WHERE id=?";
+    let sql = "UPDATE WEB_MEMBER SET pw=?, tel=?, address=? WHERE email=?";
 
     try {
-        const rows = await (await conn).query(sql, [pw, id]);
-        res.send('success');
+        const rows = await (await conn).query(sql, [pw, tel, address, email]);
+        req.session.user = {
+            email: email,
+            pw: pw,
+            tel: tel,
+            address: address
+        };
+        res.redirect('/message');
     } catch (e) {
         res.send('u r fucked');
     }

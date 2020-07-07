@@ -88,6 +88,12 @@ app.post('/join', func.join);
 
 app.get('/delete', func.delete);
 
+app.get('/update', (req, res) => {
+    res.render('update', {
+        user: req.session.user
+    });
+});
+
 app.post('/update', func.update);
 
 app.post('/one-select', func.select);
